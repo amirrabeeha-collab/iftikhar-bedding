@@ -879,20 +879,22 @@ body.catalog-open .catalog-page{display:none}body.catalog-open .catalog-page.act
      quantity: p.qty,
      line_total: p.qty * p.price
    }));
-   const payload = {
-     customer_name: String(formData.get('customer_name') || '').trim(),
-     customer_email: String(formData.get('customer_email') || '').trim(),
-     customer_phone: String(formData.get('customer_phone') || '').trim(),
-     delivery_address: String(formData.get('delivery_address') || '').trim(),
-     items: orderItems,
-     total_quantity: quantityTotal(),
-     total_price: cartTotal()
-   };
+  const payload = {
+  customer_name: String(formData.get('customer_name') || '').trim(),
+  customer_email: String(formData.get('customer_email') || '').trim(),
+  phone: String(formData.get('customer_phone') || '').trim(),
+  address: String(formData.get('delivery_address') || '').trim(),
+  product_name: orderItems.map(item =>
+    `${item.product_name} x ${item.quantity}`
+  ).join(', '),
+  quantity: quantityTotal(),
+  total_price: cartTotal()
+};
 
-   if (!payload.customer_name || !payload.customer_email || !payload.customer_phone || !payload.delivery_address) {
-     checkoutFeedback.textContent = 'Please complete all four customer details.';
-     return;
-   }
+if (!payload.customer_name || !payload.customer_email || !payload.phone || !payload.address) {
+  checkoutFeedback.textContent = 'Please complete all four customer details.';
+  return;
+}
 
    submitOrder.disabled = true;
    submitOrder.textContent = 'Submitting order…';
