@@ -158,7 +158,31 @@ body.catalog-open .catalog-page{display:none}body.catalog-open .catalog-page.act
 .cart-summary p,.checkout-note{font-size:10px;line-height:1.6;color:var(--muted)}
 .checkout-btn{width:100%;border:0;border-radius:30px;background:var(--wine);color:white;padding:15px;margin:8px 0 7px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
 .checkout-btn:disabled{opacity:.4;cursor:not-allowed}
+
 .checkout-note{display:block;text-align:center}
+.home-cart-trigger{white-space:nowrap}
+.checkout-overlay{position:fixed;inset:0;z-index:95;background:rgba(30,22,20,.58);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:18px}
+.checkout-overlay.open{display:flex}
+.checkout-panel{width:min(540px,100%);max-height:min(92vh,850px);overflow:auto;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:clamp(22px,4vw,38px);box-shadow:0 24px 80px rgba(0,0,0,.22);animation:checkoutIn .22s ease-out}
+@keyframes checkoutIn{from{transform:translateY(12px);opacity:.7}to{transform:translateY(0);opacity:1}}
+.checkout-panel-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:20px}
+.checkout-panel-head small{font-size:9px;letter-spacing:.22em;color:var(--wine);text-transform:uppercase}
+.checkout-panel-head h2{font:500 32px 'Playfair Display',serif;margin:7px 0 0;color:var(--ink)}
+.checkout-form{display:grid;gap:13px}
+.checkout-form label{display:grid;gap:6px;color:var(--muted);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+.checkout-form input,.checkout-form textarea{width:100%;border:1px solid var(--line);border-radius:8px;background:rgba(255,255,255,.48);padding:13px 14px;color:var(--ink);font:14px 'DM Sans',sans-serif;outline:none}
+.checkout-form input:focus,.checkout-form textarea:focus{border-color:var(--wine);box-shadow:0 0 0 2px rgba(114,47,59,.08)}
+.checkout-form textarea{min-height:92px;resize:vertical}
+.checkout-order-summary{background:rgba(114,47,59,.055);border:1px solid var(--line);border-radius:9px;padding:13px 15px;display:flex;justify-content:space-between;gap:12px;font-size:12px}
+.checkout-submit{width:100%;border:0;border-radius:30px;background:var(--wine);color:white;padding:15px;margin-top:4px;font-size:10px;letter-spacing:.13em;text-transform:uppercase;cursor:pointer}
+.checkout-submit:disabled{opacity:.55;cursor:wait}
+.checkout-feedback{min-height:18px;font-size:12px;line-height:1.5;color:var(--wine);text-align:center}
+.checkout-success{text-align:center;padding:24px 4px}
+.checkout-success h3{font:500 30px 'Playfair Display',serif;margin:0 0 10px}
+.checkout-success p{color:var(--muted);font-size:13px;line-height:1.7}
+.checkout-success button{border:0;border-radius:30px;background:var(--wine);color:white;padding:13px 24px;margin-top:10px;cursor:pointer}
+@media(max-width:560px){.home-cart-trigger{padding:9px 11px;font-size:9px}.header-right{gap:9px}.header-note{display:none}.checkout-panel{padding:22px}}
+
 @media(max-width:560px){.cart-drawer{padding:22px}.cart-trigger{padding:9px 11px;font-size:9px}.catalog-top{gap:8px}.catalog-overline{display:none}}
 
 </style>
@@ -166,7 +190,7 @@ body.catalog-open .catalog-page{display:none}body.catalog-open .catalog-page.act
 <body>
 <header class="site-header">
  <a class="brand" href="#" aria-label="Iftikhar Bedding home"><span class="brand-mark">I</span><span class="brand-name">Iftikhar Bedding<small>Comfort lives here</small></span></a>
- <div class="header-right"><span class="header-note">A softer kind of everyday</span><button class="menu-btn" id="openCollection">View collection&nbsp; ↗</button></div>
+ <div class="header-right"><span class="header-note">A softer kind of everyday</span><button class="cart-trigger home-cart-trigger" id="openCartHome" type="button">Your cart <span id="cartCountHome">0</span> &nbsp;↗</button><button class="menu-btn" id="openCollection">View collection&nbsp; ↗</button></div>
 </header>
 <main>
 <section class="hero" aria-label="Iftikhar Bedding introduction">
@@ -671,89 +695,247 @@ body.catalog-open .catalog-page{display:none}body.catalog-open .catalog-page.act
  </section>
 </div>
 
+<div class="checkout-overlay" id="checkoutOverlay" aria-hidden="true">
+ <section class="checkout-panel" role="dialog" aria-modal="true" aria-labelledby="checkoutTitle">
+  <div class="checkout-panel-head">
+   <div><small>DELIVERY DETAILS</small><h2 id="checkoutTitle">Complete your order</h2></div>
+   <button class="cart-close" id="closeCheckout" type="button" aria-label="Close checkout">×</button>
+  </div>
+  <form class="checkout-form" id="checkoutForm">
+   <label>Full name<input name="customer_name" type="text" autocomplete="name" maxlength="120" required placeholder="Enter your full name"></label>
+   <label>Email address<input name="customer_email" type="email" autocomplete="email" maxlength="254" required placeholder="Enter your email address"></label>
+   <label>Phone number<input name="customer_phone" type="tel" autocomplete="tel" maxlength="30" required placeholder="Enter your phone number"></label>
+   <label>Complete delivery address<textarea name="delivery_address" autocomplete="street-address" maxlength="1000" required placeholder="House / street, area, city"></textarea></label>
+   <div class="checkout-order-summary"><span id="checkoutQuantity">0 items</span><strong id="checkoutTotal">Rs. 0</strong></div>
+   <button class="checkout-submit" id="submitOrder" type="submit">Confirm order&nbsp; ↗</button>
+   <div class="checkout-feedback" id="checkoutFeedback" role="status" aria-live="polite"></div>
+  </form>
+  <div class="checkout-success" id="checkoutSuccess" hidden>
+   <h3>Order received.</h3>
+   <p id="checkoutSuccessText">Thank you. Your order has been saved with Pending status.</p>
+   <button id="finishOrder" type="button">Continue shopping</button>
+  </div>
+ </section>
+</div>
+
 <script>
 
-// Lightweight client-side cart: item counts and subtotal update immediately.
+// Shared cart and Supabase order checkout.
 (() => {
- const cart={};
- const overlay=document.getElementById('cartOverlay');
- const countEls=[document.getElementById('cartCount'),document.getElementById('cartCountFloral'),document.getElementById('cartCountNewFloral'),document.getElementById('cartCount3D'),document.getElementById('cartCountFitted')].filter(Boolean);
- const itemsEl=document.getElementById('cartItems');
- const subtotalEl=document.getElementById('cartSubtotal');
- const checkout=document.getElementById('checkoutBtn');
- const money=n=>'Rs. '+n.toLocaleString('en-PK');
- function productFromCard(card){
+ const SUPABASE_URL = 'https://sebketeihwwqfsuddctx.supabase.co';
+ const SUPABASE_ANON_KEY = 'sb_publishable_jqnHwVmI3bgCIO0t-Oqumg_870fX2ed';
+
+ const cart = {};
+ const overlay = document.getElementById('cartOverlay');
+ const countEls = [
+   document.getElementById('cartCountHome'),
+   document.getElementById('cartCount'),
+   document.getElementById('cartCountFloral'),
+   document.getElementById('cartCountNewFloral'),
+   document.getElementById('cartCount3D'),
+   document.getElementById('cartCountFitted')
+ ].filter(Boolean);
+ const itemsEl = document.getElementById('cartItems');
+ const subtotalEl = document.getElementById('cartSubtotal');
+ const checkout = document.getElementById('checkoutBtn');
+ const checkoutOverlay = document.getElementById('checkoutOverlay');
+ const checkoutForm = document.getElementById('checkoutForm');
+ const checkoutFeedback = document.getElementById('checkoutFeedback');
+ const submitOrder = document.getElementById('submitOrder');
+ const checkoutQuantity = document.getElementById('checkoutQuantity');
+ const checkoutTotal = document.getElementById('checkoutTotal');
+ const checkoutSuccess = document.getElementById('checkoutSuccess');
+ const money = n => 'Rs. ' + Number(n).toLocaleString('en-PK');
+
+ function entries() { return Object.values(cart); }
+ function quantityTotal() { return entries().reduce((sum, p) => sum + p.qty, 0); }
+ function cartTotal() { return entries().reduce((sum, p) => sum + p.qty * p.price, 0); }
+
+ function productFromCard(card) {
+   const displayedPrice = card.querySelector('.product-price strong')?.textContent || '';
+   const price = Number(displayedPrice.replace(/[^\d.]/g, ''));
    return {
-     id:card.dataset.product,
-     name:card.querySelector('.product-meta strong').textContent,
-     image:card.querySelector('img').src,
-     shade:card.querySelector('.product-meta small').textContent,
-     price:card.closest('#fittedBedsheetsPage')?2500:card.closest('#bedSpreadPage')?3000:card.closest('#floralPage')?2100:card.closest('#threeDPage')?3000:2700
+     id: card.dataset.product,
+     name: card.querySelector('.product-meta strong').textContent.trim(),
+     image: card.querySelector('img').src,
+     shade: card.querySelector('.product-meta small')?.textContent.trim() || '',
+     price: Number.isFinite(price) ? price : 0
    };
  }
- function render(){
-   const entries=Object.values(cart);
-   const totalQty=entries.reduce((sum,p)=>sum+p.qty,0);
-   const subtotal=entries.reduce((sum,p)=>sum+p.qty*p.price,0);
-   countEls.forEach(el=>el.textContent=totalQty);
-   subtotalEl.textContent=money(subtotal);
-   checkout.disabled=entries.length===0;
-   if(!entries.length){
-     itemsEl.innerHTML='<div class="cart-empty">Your cart is waiting for a little comfort.</div>';
+
+ function render() {
+   const products = entries();
+   countEls.forEach(el => el.textContent = quantityTotal());
+   subtotalEl.textContent = money(cartTotal());
+   checkout.disabled = products.length === 0;
+   checkoutQuantity.textContent = quantityTotal() + (quantityTotal() === 1 ? ' item' : ' items');
+   checkoutTotal.textContent = money(cartTotal());
+   if (!products.length) {
+     itemsEl.innerHTML = '<div class="cart-empty">Your cart is waiting for a little comfort.</div>';
      return;
    }
-   itemsEl.innerHTML=entries.map(p=>`
+   itemsEl.innerHTML = products.map(p => `
     <div class="cart-row" data-id="${p.id}">
      <img src="${p.image}" alt="">
      <div><h3>${p.name}</h3><small>${p.shade} · ${money(p.price)} each</small>
       <div class="qty-controls"><button type="button" data-action="minus" aria-label="Decrease quantity">−</button><span>${p.qty}</span><button type="button" data-action="plus" aria-label="Increase quantity">+</button></div>
       <button class="remove-item" type="button" data-action="remove">Remove</button>
-     </div><strong class="cart-row-price">${money(p.qty*p.price)}</strong>
+     </div><strong class="cart-row-price">${money(p.qty * p.price)}</strong>
     </div>`).join('');
  }
- function open(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';}
- function close(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.style.overflow='';}
- document.querySelectorAll('.add-cart').forEach(btn=>{
-   btn.addEventListener('click',e=>{
+
+ function openCart() {
+   overlay.classList.add('open');
+   overlay.setAttribute('aria-hidden', 'false');
+   document.body.style.overflow = 'hidden';
+ }
+ function closeCart() {
+   overlay.classList.remove('open');
+   overlay.setAttribute('aria-hidden', 'true');
+   document.body.style.overflow = '';
+ }
+ function openCheckout() {
+   if (!entries().length) return;
+   closeCart();
+   checkoutForm.hidden = false;
+   checkoutSuccess.hidden = true;
+   checkoutFeedback.textContent = '';
+   checkoutOverlay.classList.add('open');
+   checkoutOverlay.setAttribute('aria-hidden', 'false');
+   document.body.style.overflow = 'hidden';
+   checkoutQuantity.textContent = quantityTotal() + (quantityTotal() === 1 ? ' item' : ' items');
+   checkoutTotal.textContent = money(cartTotal());
+ }
+ function closeCheckout() {
+   checkoutOverlay.classList.remove('open');
+   checkoutOverlay.setAttribute('aria-hidden', 'true');
+   document.body.style.overflow = '';
+ }
+
+ document.querySelectorAll('.add-cart').forEach(btn => {
+   btn.addEventListener('click', e => {
      e.stopPropagation();
-     const card=btn.closest('.product-card');
-     const p=productFromCard(card);
-     if(cart[p.id])cart[p.id].qty++;
-     else cart[p.id]={...p,qty:1};
+     const product = productFromCard(btn.closest('.product-card'));
+     if (!product.id || !product.name || !product.price) {
+       alert('This product is missing its price or product information. Please contact the website owner.');
+       return;
+     }
+     if (cart[product.id]) cart[product.id].qty++;
+     else cart[product.id] = {...product, qty: 1};
      render();
-     const old=btn.innerHTML;
-     btn.innerHTML='Added to cart <span>✓</span>';
+     const old = btn.innerHTML;
+     btn.innerHTML = 'Added to cart <span>✓</span>';
      btn.classList.add('added');
-     setTimeout(()=>{btn.innerHTML=old;btn.classList.remove('added');},1100);
+     setTimeout(() => { btn.innerHTML = old; btn.classList.remove('added'); }, 1100);
    });
  });
- document.getElementById('openCart').addEventListener('click',open);
- const floralCartButton=document.getElementById('openCartFloral');
- if(floralCartButton)floralCartButton.addEventListener('click',open);
- const newFloralCartButton=document.getElementById('openCartNewFloral');
- if(newFloralCartButton)newFloralCartButton.addEventListener('click',open);
- const threeDCartButton=document.getElementById('openCart3D');
- if(threeDCartButton)threeDCartButton.addEventListener('click',open);
- const fittedCartButton=document.getElementById('openCartFitted');
- if(fittedCartButton)fittedCartButton.addEventListener('click',open);
- document.getElementById('closeCart').addEventListener('click',close);
- overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
- itemsEl.addEventListener('click',e=>{
-   const action=e.target.dataset.action;
-   if(!action)return;
-   const id=e.target.closest('.cart-row').dataset.id;
-   if(action==='plus')cart[id].qty++;
-   if(action==='minus'){cart[id].qty--;if(cart[id].qty<=0)delete cart[id];}
-   if(action==='remove')delete cart[id];
+
+ ['openCartHome','openCart','openCartFloral','openCartNewFloral','openCart3D','openCartFitted'].forEach(id => {
+   const button = document.getElementById(id);
+   if (button) button.addEventListener('click', openCart);
+ });
+ document.getElementById('closeCart').addEventListener('click', closeCart);
+ overlay.addEventListener('click', e => { if (e.target === overlay) closeCart(); });
+ document.getElementById('closeCheckout').addEventListener('click', closeCheckout);
+ document.getElementById('finishOrder').addEventListener('click', () => {
+   closeCheckout();
+   checkoutForm.reset();
+   checkoutForm.hidden = false;
+   checkoutSuccess.hidden = true;
+ });
+ checkoutOverlay.addEventListener('click', e => { if (e.target === checkoutOverlay) closeCheckout(); });
+
+ itemsEl.addEventListener('click', e => {
+   const action = e.target.dataset.action;
+   if (!action) return;
+   const row = e.target.closest('.cart-row');
+   if (!row || !cart[row.dataset.id]) return;
+   const id = row.dataset.id;
+   if (action === 'plus') cart[id].qty++;
+   if (action === 'minus') { cart[id].qty--; if (cart[id].qty <= 0) delete cart[id]; }
+   if (action === 'remove') delete cart[id];
    render();
  });
- checkout.addEventListener('click',()=>{
-   document.getElementById('checkoutNote').textContent='Your cart is ready. Online ordering and payment will be connected soon.';
+
+ checkout.addEventListener('click', openCheckout);
+
+ checkoutForm.addEventListener('submit', async e => {
+   e.preventDefault();
+   if (!entries().length) {
+     checkoutFeedback.textContent = 'Your cart is empty.';
+     return;
+   }
+   if (SUPABASE_URL.includes('PASTE_') || SUPABASE_ANON_KEY.includes('PASTE_')) {
+     checkoutFeedback.textContent = 'The checkout form is ready, but the Supabase Project URL and anon key still need to be connected.';
+     return;
+   }
+
+   const formData = new FormData(checkoutForm);
+   const orderItems = entries().map(p => ({
+     product_id: p.id,
+     product_name: p.name,
+     description: p.shade,
+     unit_price: p.price,
+     quantity: p.qty,
+     line_total: p.qty * p.price
+   }));
+   const payload = {
+     customer_name: String(formData.get('customer_name') || '').trim(),
+     customer_email: String(formData.get('customer_email') || '').trim(),
+     customer_phone: String(formData.get('customer_phone') || '').trim(),
+     delivery_address: String(formData.get('delivery_address') || '').trim(),
+     items: orderItems,
+     total_quantity: quantityTotal(),
+     total_price: cartTotal()
+   };
+
+   if (!payload.customer_name || !payload.customer_email || !payload.customer_phone || !payload.delivery_address) {
+     checkoutFeedback.textContent = 'Please complete all four customer details.';
+     return;
+   }
+
+   submitOrder.disabled = true;
+   submitOrder.textContent = 'Submitting order…';
+   checkoutFeedback.textContent = 'Saving your order…';
+   try {
+     const response = await fetch(SUPABASE_URL.replace(/\/$/, '') + '/rest/v1/orders', {
+       method: 'POST',
+       headers: {
+         'apikey': SUPABASE_ANON_KEY,
+         'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+         'Content-Type': 'application/json',
+         'Prefer': 'return=minimal'
+       },
+       body: JSON.stringify(payload)
+     });
+     if (!response.ok) {
+       const errorText = await response.text();
+       throw new Error(errorText || ('Supabase returned ' + response.status));
+     }
+     checkoutForm.reset();
+     checkoutForm.hidden = true;
+     checkoutSuccess.hidden = false;
+     document.getElementById('checkoutSuccessText').textContent =
+       'Thank you, ' + payload.customer_name + '. Your order has been saved successfully with Pending status.';
+     Object.keys(cart).forEach(key => delete cart[key]);
+     render();
+   } catch (error) {
+     console.error('Order submission failed:', error);
+     checkoutFeedback.textContent = 'We could not save your order. Please try again. If this continues, contact the store.';
+   } finally {
+     submitOrder.disabled = false;
+     submitOrder.textContent = 'Confirm order ↗';
+   }
  });
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('open'))close();});
+
+ document.addEventListener('keydown', e => {
+   if (e.key === 'Escape') {
+     if (checkoutOverlay.classList.contains('open')) closeCheckout();
+     else if (overlay.classList.contains('open')) closeCart();
+   }
+ });
  render();
 })();
-
 </script>
 </body>
 </html>
