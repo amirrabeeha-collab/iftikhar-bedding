@@ -1116,6 +1116,7 @@ html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}b
 })();
 </script>
 <script>
+document.addEventListener("DOMContentLoaded", () => {
 
 // Category navigation and product preview.
 (() => {
@@ -1178,7 +1179,7 @@ html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}b
  const comfortersPage=document.getElementById('comfortersPage');
  const cottonPage=document.getElementById('cottonPage');
  const comfortersRealPage=document.getElementById('comfortersRealPage');
- document.getElementById('comfortersCategory').addEventListener('click',()=>showCatalog(comfortersPage));
+ document.getElementById('comfortersCategory').addEventListener('click',()=>showCatalog(comfortersRealPage));
  document.getElementById('cottonCategory').addEventListener('click',()=>showCatalog(cottonPage));
  back.forEach(b=>b.addEventListener('click',showHome));
  window.addEventListener('popstate',()=>{
@@ -1186,9 +1187,13 @@ html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}b
    body.classList.toggle('catalog-open',floral||beds||newFloral||threeD||fitted||towels||deals||cotton||comforters);
    page.classList.toggle('active',beds);floralPage.classList.toggle('active',floral);newFloralPage.classList.toggle('active',newFloral);threeDPage.classList.toggle('active',threeD);fittedPage.classList.toggle('active',fitted);towelsPage.classList.toggle('active',towels);dealsPage.classList.toggle('active',deals);
    cottonPage.classList.toggle('active',cotton);
+   comfortersRealPage.classList.toggle('active',comforters);
+   cottonPage.classList.toggle('active',cotton);
    comfortersRealPage.classList.toggle('active',comforters);cottonPage.classList.toggle('active',cotton);comfortersRealPage.classList.toggle('active',comforters);fittedPage.classList.toggle('active',fitted);towelsPage.classList.toggle('active',towels);
    page.setAttribute('aria-hidden',beds?'false':'true');
    floralPage.setAttribute('aria-hidden',floral?'false':'true');newFloralPage.setAttribute('aria-hidden',newFloral?'false':'true');threeDPage.setAttribute('aria-hidden',threeD?'false':'true');fittedPage.setAttribute('aria-hidden',fitted?'false':'true');towelsPage.setAttribute('aria-hidden',towels?'false':'true');dealsPage.setAttribute('aria-hidden',deals?'false':'true');
+   cottonPage.setAttribute('aria-hidden',cotton?'false':'true');
+   comfortersRealPage.setAttribute('aria-hidden',comforters?'false':'true');
    cottonPage.setAttribute('aria-hidden',cotton?'false':'true');
    comfortersRealPage.setAttribute('aria-hidden',comforters?'false':'true');cottonPage.setAttribute('aria-hidden',cotton?'false':'true');comfortersRealPage.setAttribute('aria-hidden',comforters?'false':'true');fittedPage.setAttribute('aria-hidden',fitted?'false':'true');towelsPage.setAttribute('aria-hidden',towels?'false':'true');
    window.scrollTo(0,0);
@@ -1242,6 +1247,8 @@ html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}b
  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLightbox();});
 })();
 
+
+});
 </script>
 
 
