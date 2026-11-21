@@ -1146,14 +1146,16 @@ html{width:100%;max-width:100%;overflow-x:hidden;-webkit-text-size-adjust:100%}b
    threeDPage.classList.toggle('active',target===threeDPage);
    fittedPage.classList.toggle('active',target===fittedPage);
    towelsPage.classList.toggle('active',target===towelsPage);
-   dealsPage.classList.toggle('active',target===dealsPage);\n   cottonPage.classList.toggle('active',target===cottonPage);
+   dealsPage.classList.toggle('active',target===dealsPage);
+   cottonPage.classList.toggle('active',target===cottonPage);
    page.setAttribute('aria-hidden',target===page?'false':'true');
    floralPage.setAttribute('aria-hidden',target===floralPage?'false':'true');
    newFloralPage.setAttribute('aria-hidden',target===newFloralPage?'false':'true');
    threeDPage.setAttribute('aria-hidden',target===threeDPage?'false':'true');
    fittedPage.setAttribute('aria-hidden',target===fittedPage?'false':'true');
    towelsPage.setAttribute('aria-hidden',target===towelsPage?'false':'true');
-   dealsPage.setAttribute('aria-hidden',target===dealsPage?'false':'true');\n   cottonPage.setAttribute('aria-hidden',target===cottonPage?'false':'true');
+   dealsPage.setAttribute('aria-hidden',target===dealsPage?'false':'true');
+   cottonPage.setAttribute('aria-hidden',target===cottonPage?'false':'true');
    history.pushState({catalog:true},'',target===page?'#bed-spread-sets':target===floralPage?'#floral-premium':target===newFloralPage?'#floral':target===threeDPage?'#3d-bedsheets':target===fittedPage?'#fitted-bedsheets':target===towelsPage?'#towels':target===cottonPage?'#cotton':'#deals');
    window.scrollTo({top:0,behavior:'smooth'});
  }
